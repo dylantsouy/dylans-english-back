@@ -65,7 +65,7 @@ DailArticleRoute.put('/api/dailyarticle/:_id', express.json(), async (req, res, 
         statusCode: 400,
         message: '查無資料',
       };
-      next(error)
+      res.json(error)
       return
     });
 });
@@ -83,10 +83,10 @@ DailArticleRoute.delete('/api/dailyarticle/:_id', async (req, res, next) => {
   // 搜尋是否存在
   await DailyArticleModel.findByIdAndDelete(req.params._id)
     .then(data => {
-      data === null ? next(error) : res.json(message)
+      data === null ? res.json(error) : res.json(message)
     })
     .catch(e => {
-      next(error)
+      next(e)
       return
     });
 })

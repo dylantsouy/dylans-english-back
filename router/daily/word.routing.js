@@ -44,7 +44,7 @@ DailyWordRoute.post('/api/dailywords', express.json(), async (req, res, next) =>
   const { word, chinese, speech, sentence, sentenceChinese, showDate } = req.body;
   // Try Validate
   await new DailyWordModel({ word, chinese, speech, sentence, sentenceChinese, showDate }).save()
-    .then(data => res.json(req.body))
+    .then(() => res.json(req.body))
     .catch(err => next(err))
 });
 
@@ -52,21 +52,17 @@ DailyWordRoute.post('/api/dailywords', express.json(), async (req, res, next) =>
 DailyWordRoute.put('/api/dailywords/:_id', express.json(), async (req, res, next) => {
   // 搜尋是否存在
   await DailyWordModel.findById(req.params._id)
-    .then(async (data) => {
+    .then(async () => {
       req.body.updated = Date.now()
       await DailyWordModel.updateOne({ _id: req.params._id }, { $set: req.body })
-        .then(data => res.json(req.body))
+        .then(() => res.json(req.body))
         .catch(err => {
           next(err)
           return
         })
     })
     .catch(e => {
-      const error = {
-        statusCode: 400,
-        message: '查無資料',
-      };
-      next(error)
+      next(e)
       return
     });
 });
@@ -84,10 +80,10 @@ DailyWordRoute.delete('/api/dailywords/:_id', async (req, res, next) => {
   // 搜尋是否存在
   await DailyWordModel.findByIdAndDelete(req.params._id)
     .then(data => {
-      data === null ? next(error) : res.json(message)
+      data === null ? res.json(error) : res.json(message)
     })
     .catch(e => {
-      next(error)
+      next(e)
       return
     });
 })

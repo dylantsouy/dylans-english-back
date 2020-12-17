@@ -57,7 +57,7 @@ WordRoute.post('/api/words/getWordsByLesson', express.json(), async (req, res, n
           statusCode: 400,
           message: '查無資料',
         };
-        next(error)
+        res.json(error)
         return
       }
       // 分頁
@@ -80,29 +80,25 @@ WordRoute.post('/api/words/getWordsByWord', express.json(), async (req, res, nex
       statusCode: 400,
       message: '沒有參數',
     };
-    next(error)
+    res.json(error)
     return
   }
   // 搜尋是否存在
-  await WordModel.find({ word: req.body.word })
+  await WordModel.findOne({ word: req.body.word })
     .then(data => {
-      if (data && !data.length) {
+      if (!data) {
         const error = {
           statusCode: 400,
           message: '查無資料',
         };
-        next(error)
+        res.json(error)
         return
       } else {
         res.json(data)
       }
     })
     .catch(e => {
-      const error = {
-        statusCode: 400,
-        message: '查無資料',
-      };
-      next(error)
+      res.json(e)
       return
     })
 });
@@ -113,7 +109,7 @@ WordRoute.post('/api/words', express.json(), async (req, res, next) => {
   // Try Validate
   const audio = word;
   await new WordModel({ word, chinese, lesson, level, speech, sentence, sentenceChinese, phrase, derivative, synonym, antonym, note, audio }).save()
-    .then(data => res.json(req.body))
+    .then(() => res.json(req.body))
     .catch(err => next(err))
 });
 
@@ -121,10 +117,10 @@ WordRoute.post('/api/words', express.json(), async (req, res, next) => {
 WordRoute.put('/api/words/:_id', express.json(), async (req, res, next) => {
   // 搜尋是否存在
   await WordModel.findById(req.params._id)
-    .then(async (data) => {
+    .then(async () => {
       req.body.updated = Date.now()
       await WordModel.updateOne({ _id: req.params._id }, { $set: req.body })
-        .then(data => res.json(req.body))
+        .then(() => res.json(req.body))
         .catch(err => {
           next(err)
           return
@@ -135,7 +131,7 @@ WordRoute.put('/api/words/:_id', express.json(), async (req, res, next) => {
         statusCode: 400,
         message: '查無資料',
       };
-      next(error)
+      res.json(error)
       return
     });
 });
@@ -156,7 +152,7 @@ WordRoute.delete('/api/words/:_id', async (req, res, next) => {
       data === null ? next(error) : res.json(message)
     })
     .catch(e => {
-      next(error)
+      res.json(error)
       return
     });
 })

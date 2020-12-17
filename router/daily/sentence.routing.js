@@ -43,7 +43,7 @@ DailSentenceRoute.post('/api/dailysentence', express.json(), async (req, res, ne
   const { english, chinese, words, showDate } = req.body;
   // Try Validate
   await new DailySentenceModel({ english, chinese, words, showDate }).save()
-    .then(data => res.json(req.body))
+    .then(() => res.json(req.body))
     .catch(err => next(err))
 });
 
@@ -51,21 +51,17 @@ DailSentenceRoute.post('/api/dailysentence', express.json(), async (req, res, ne
 DailSentenceRoute.put('/api/dailysentence/:_id', express.json(), async (req, res, next) => {
   // 搜尋是否存在
   await DailySentenceModel.findById(req.params._id)
-    .then(async (data) => {
+    .then(async () => {
       req.body.updated = Date.now()
       await DailySentenceModel.updateOne({ _id: req.params._id }, { $set: req.body })
-        .then(data => res.json(req.body))
+        .then(() => res.json(req.body))
         .catch(err => {
           next(err)
           return
         })
     })
     .catch(e => {
-      const error = {
-        statusCode: 400,
-        message: '查無資料',
-      };
-      next(error)
+      next(e)
       return
     });
 });
@@ -83,10 +79,10 @@ DailSentenceRoute.delete('/api/dailysentence/:_id', async (req, res, next) => {
   // 搜尋是否存在
   await DailySentenceModel.findByIdAndDelete(req.params._id)
     .then(data => {
-      data === null ? next(error) : res.json(message)
+      data === null ?  res.json(error) : res.json(message)
     })
     .catch(e => {
-      next(error)
+      next(e)
       return
     });
 })

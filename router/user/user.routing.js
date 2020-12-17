@@ -38,7 +38,7 @@ UserRoute.post('/api/users/getUser', express.json(), async (req, res, next) => {
       statusCode: 400,
       message: '沒有參數',
     };
-    next(error)
+    res.json(error)
     return
   }
   // 搜尋是否存在
@@ -49,7 +49,7 @@ UserRoute.post('/api/users/getUser', express.json(), async (req, res, next) => {
           statusCode: 400,
           message: '查無資料',
         };
-        next(error)
+        res.json(error)
         return
       } else {
         res.json(data)
@@ -60,7 +60,7 @@ UserRoute.post('/api/users/getUser', express.json(), async (req, res, next) => {
         statusCode: 400,
         message: '查無資料',
       };
-      next(error)
+      res.json(error)
       return
     })
 });
@@ -72,7 +72,7 @@ UserRoute.post('/api/users/getUserLevel', express.json(), async (req, res, next)
       statusCode: 400,
       message: '沒有參數',
     };
-    next(error)
+    res.json(error)
     return
   }
   await UserModel.findOne({ username: req.body.username })
@@ -82,13 +82,13 @@ UserRoute.post('/api/users/getUserLevel', express.json(), async (req, res, next)
           statusCode: 400,
           message: '查無資料',
         };
-        next(error)
+        res.json(error)
         return
       } else {
         let dataLength = 0;
         await WordModel.find({})
           .then(data => {
-             dataLength = data.length;
+            dataLength = data.length;
           })
         let level = {
           orange: 0,
@@ -133,6 +133,7 @@ UserRoute.post('/api/users/getUserLevel', express.json(), async (req, res, next)
       return
     })
 });
+
 /* 查單字量 */
 UserRoute.post('/api/users/getOverview', express.json(), async (req, res, next) => {
   if (!req.body.username) {
@@ -140,7 +141,7 @@ UserRoute.post('/api/users/getOverview', express.json(), async (req, res, next) 
       statusCode: 400,
       message: '沒有參數',
     };
-    next(error)
+    res.json(error)
     return
   }
   await UserModel.findOne({ username: req.body.username })
@@ -150,7 +151,7 @@ UserRoute.post('/api/users/getOverview', express.json(), async (req, res, next) 
           statusCode: 400,
           message: '查無資料',
         };
-        next(error)
+        res.json(error)
         return
       } else {
         let overview = {
@@ -169,27 +170,27 @@ UserRoute.post('/api/users/getOverview', express.json(), async (req, res, next) 
         let sixth = [];
         console.log(data.knowWords);
         data.knowWords.filter(e => {
-          if (e.year == 2021) {
+          if (e.year == 2020) {
             first.push(e)
           }
           overview.first = first.length
-          if (e.year == 2022) {
+          if (e.year == 2021) {
             second.push(e)
           }
           overview.second = second.length
-          if (e.year == 2023) {
+          if (e.year == 2022) {
             third.push(e)
           }
           overview.third = third.length
-          if (e.year == 2024) {
+          if (e.year == 2023) {
             forth.push(e)
           }
           overview.forth = forth.length
-          if (e.year == 2025) {
+          if (e.year == 2024) {
             fifth.push(e)
           }
           overview.fifth = fifth.length
-          if (e.year == 2026) {
+          if (e.year == 2025) {
             sixth.push(e)
           }
           overview.sixth = sixth.length
@@ -198,14 +199,11 @@ UserRoute.post('/api/users/getOverview', express.json(), async (req, res, next) 
       }
     })
     .catch(e => {
-      const error = {
-        statusCode: 400,
-        message: '查無資料',
-      };
-      next(error)
+      next(e)
       return
     })
 });
+
 /* 查會的單字 */
 UserRoute.post('/api/users/getKnowWord', express.json(), async (req, res, next) => {
   if (!req.body.username) {
@@ -213,7 +211,7 @@ UserRoute.post('/api/users/getKnowWord', express.json(), async (req, res, next) 
       statusCode: 400,
       message: '沒有參數',
     };
-    next(error)
+    res.json(error)
     return
   }
   await UserModel.findOne({ username: req.body.username })
@@ -223,7 +221,7 @@ UserRoute.post('/api/users/getKnowWord', express.json(), async (req, res, next) 
           statusCode: 400,
           message: '查無資料',
         };
-        next(error)
+        res.json(error)
         return
       } else {
         const knowWord = data.knowWords.map(e => e.word)
@@ -269,11 +267,11 @@ UserRoute.post('/api/users', express.json(), async (req, res, next) => {
     message: '密碼長度不符合規定',
   };
   if (!req.body.password) {
-    next(error2);
+    res.json(error)
     return;
   }
   if (req.body.password.length < 6 || req.body.password.length > 16) {
-    next(error2);
+    res.json(error2)
     return;
   }
   const insertValues = {
@@ -292,13 +290,231 @@ UserRoute.post('/api/users', express.json(), async (req, res, next) => {
         const token = jwt.sign(data.toJSON(), process.env.SECRET, { expiresIn: 10 * 1000 });
         res.json({ token });
       })
-      .catch(err => next(err))
+      .catch(err => {
+        next(err)
+        return
+      })
   } else {
-    next(error);
+    res.json(error)
     return;
   }
 });
+/* 新增備註單字 */
+UserRoute.post('/api/users/addNotedWord', express.json(), async (req, res, next) => {
+  if (!req.body.word) {
+    const error = {
+      statusCode: 400,
+      message: '請輸入單字',
+    };
+    res.json(error)
+    return
+  }
+  // 搜尋是否存在
+  await WordModel.findOne({ word: req.body.word })
+    .then(async goal => {
+      if (!goal) {
+        const error = {
+          statusCode: 400,
+          message: '很抱歉，此單字還未有資料',
+        };
+        res.json(error)
+        return
+      } else {
+        await UserModel.findOne({ username: req.body.username })
+          .then(async user => {
+            if (!user) {
+              const error = {
+                statusCode: 400,
+                message: '用戶資料錯誤',
+              };
+              res.json(error)
+              return
+            } else {
+              if (user.notedWords.map(e => e.word).indexOf(req.body.word) === -1) {
+                const noted = { word: goal.word, chinese: goal.chinese, speech: goal.speech }
+                user.notedWords.push(noted)
 
+                user.updated = Date.now();
+                // Try Validate
+                await UserModel.updateOne({ username: req.body.username }, { $set: user })
+                  .then(() =>
+                    res.json({
+                      statusCode: 200,
+                      message: '新增備註單字成功'
+                    }))
+                  .catch(err => {
+                    next(err)
+                    return;
+                  })
+              } else {
+                const error = {
+                  statusCode: 400,
+                  message: '此單字已在您的備註欄裡',
+                };
+                res.json(error)
+                return;
+              }
+
+            }
+          })
+          .catch(e => {
+            next(e)
+            return
+          })
+      }
+    })
+    .catch(e => {
+      next(e)
+      return
+    })
+});
+/* 刪除備註單字 */
+UserRoute.post('/api/users/removeNotedWord', express.json(), async (req, res, next) => {
+  await UserModel.findOne({ username: req.body.username })
+    .then(async user => {
+      if (!user) {
+        const error = {
+          statusCode: 400,
+          message: '用戶資料錯誤',
+        };
+        res.json(error)
+        return
+      } else {
+        if (user.notedWords.map(e => e.word).indexOf(req.body.word) === -1) {
+          const error = {
+            statusCode: 400,
+            message: '無此備註單字',
+          };
+          res.json(error)
+          return
+        }
+        user.notedWords.splice(user.notedWords.map(e => e.word).indexOf(req.body.word), 1)
+        // Try Validate
+        await UserModel.updateOne({ username: req.body.username }, { $set: user })
+          .then(() =>
+            res.json({
+              statusCode: 200,
+              message: '刪除成功'
+            }))
+          .catch(err => {
+            next(err)
+            return;
+          })
+      }
+    })
+    .catch(e => {
+      next(e)
+      return
+    })
+});
+
+/* 新增know單字 */
+UserRoute.post('/api/users/addKnowWord', express.json(), async (req, res, next) => {
+  if (!req.body.word) {
+    const error = {
+      statusCode: 400,
+      message: '請輸入單字',
+    };
+    res.json(error)
+    return
+  }
+  // 搜尋是否存在
+  await WordModel.findOne({ word: req.body.word })
+    .then(async goal => {
+      if (!goal) {
+        const error = {
+          statusCode: 400,
+          message: '很抱歉，此單字還未有資料',
+        };
+        res.json(error)
+        return
+      } else {
+        await UserModel.findOne({ username: req.body.username })
+          .then(async user => {
+            if (!user) {
+              const error = {
+                statusCode: 400,
+                message: '用戶資料錯誤',
+              };
+              res.json(error)
+              return
+            } else {
+              if (user.knowWords.map(e => e.word).indexOf(req.body.word) === -1) {
+                const know = { word: goal.word, year: new Date().getFullYear(), level: goal.level, lesson: goal.lesson }
+                user.knowWords.push(know)
+                user.updated = Date.now();
+                // Try Validate
+                await UserModel.updateOne({ username: req.body.username }, { $set: user })
+                  .then(() =>
+                    res.json({
+                      statusCode: 200,
+                      message: '新增成功'
+                    }))
+                  .catch(err => {
+                    next(err)
+                    return;
+                  })
+              } else {
+                const error = {
+                  statusCode: 400,
+                  message: '單字重複',
+                };
+                res.json(error)
+                return;
+              }
+
+            }
+          })
+          .catch(e => {
+            next(e)
+            return
+          })
+      }
+    })
+    .catch(e => {
+      next(e)
+      return
+    })
+});
+/* 刪除備註單字 */
+UserRoute.post('/api/users/removeKnowWord', express.json(), async (req, res, next) => {
+  await UserModel.findOne({ username: req.body.username })
+    .then(async user => {
+      if (!user) {
+        const error = {
+          statusCode: 400,
+          message: '用戶資料錯誤',
+        };
+        res.json(error)
+        return
+      } else {
+        if (user.knowWords.map(e => e.word).indexOf(req.body.word) === -1) {
+          const error = {
+            statusCode: 400,
+            message: '無此單字',
+          };
+          res.json(error)
+          return
+        }
+        user.knowWords.splice(user.knowWords.map(e => e.word).indexOf(req.body.word), 1)
+        // Try Validate
+        await UserModel.updateOne({ username: req.body.username }, { $set: user })
+          .then(() =>
+            res.json({
+              statusCode: 200,
+              message: '刪除成功'
+            }))
+          .catch(err => {
+            next(err)
+            return;
+          })
+      }
+    })
+    .catch(e => {
+      next(e)
+      return
+    })
+});
 /* Put */
 UserRoute.put('/api/users/:username', express.json(), async (req, res, next) => {
   // 搜尋是否存在 // 搜尋是否存在
@@ -308,7 +524,7 @@ UserRoute.put('/api/users/:username', express.json(), async (req, res, next) => 
       statusCode: 400,
       message: '惡意變更密碼',
     };
-    next(error);
+    res.json(error)
     return;
   }
   if (!goal) {
@@ -316,7 +532,7 @@ UserRoute.put('/api/users/:username', express.json(), async (req, res, next) => 
       statusCode: 400,
       message: '查無資料',
     };
-    next(error);
+    res.json(error)
     return;
   }
   // 搜尋是否重複
@@ -326,7 +542,7 @@ UserRoute.put('/api/users/:username', express.json(), async (req, res, next) => 
       statusCode: 400,
       message: '用戶名重複',
     };
-    next(error);
+    res.json(error)
     return;
   }
   req.body.updated = Date.now();
@@ -359,7 +575,7 @@ UserRoute.delete('/api/users/:username', async (req, res, next) => {
         })
     })
     .catch(e => {
-      next(error)
+      next(e)
       return
     });
 });
