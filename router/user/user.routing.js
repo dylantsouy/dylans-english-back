@@ -204,6 +204,35 @@ UserRoute.post('/api/users/getOverview', express.json(), async (req, res, next) 
     })
 });
 
+/* 查備註的單字 */
+UserRoute.post('/api/users/getNotedWord', express.json(), async (req, res, next) => {
+  if (!req.body.username) {
+    const error = {
+      statusCode: 400,
+      message: '沒有參數',
+    };
+    res.json(error)
+    return
+  }
+  await UserModel.findOne({ username: req.body.username })
+    .then(data => {
+      if (!data) {
+        const error = {
+          statusCode: 400,
+          message: '查無資料',
+        };
+        res.json(error)
+        return
+      } else {
+        const notedWords = data.notedWords.map(e => e.word)
+        res.json(notedWords)
+      }
+    })
+    .catch(e => {
+      next(e)
+      return
+    })
+});
 /* 查會的單字 */
 UserRoute.post('/api/users/getKnowWord', express.json(), async (req, res, next) => {
   if (!req.body.username) {
@@ -224,8 +253,8 @@ UserRoute.post('/api/users/getKnowWord', express.json(), async (req, res, next) 
         res.json(error)
         return
       } else {
-        const knowWord = data.knowWords.map(e => e.word)
-        res.json(knowWord)
+        const knowWords = data.knowWords.map(e => e.word)
+        res.json(knowWords)
       }
     })
     .catch(e => {
@@ -237,14 +266,17 @@ UserRoute.post('/api/users/getKnowWord', express.json(), async (req, res, next) 
 UserRoute.post('/api/login', express.json(), async (req, res, next) => {
   // 搜尋是否存在
   await UserModel.findOne({ username: req.body.username })
-    .then(data => {
+    .then(async data => {
       if (!data) {
         res.json({ success: false, message: '用戶不存在' })
       } else {
         const pwdMatchFlag = bcrypt.compareSync(req.body.password, data.password);
         if (pwdMatchFlag) {
           const token = jwt.sign(data.toJSON(), process.env.SECRET, { expiresIn: 10 * 1000 });
-          res.json({ token });
+          const loginDate = Date.now();
+          await UserModel.updateOne({ username: req.body.username }, { $set: { loginDate: loginDate } })
+            .then(() => res.json({ token }))
+            .catch(err => next(err))
         } else {
           res.json({ success: false, message: '驗證失敗,密碼錯誤' })
         }
@@ -279,6 +311,7 @@ UserRoute.post('/api/users', express.json(), async (req, res, next) => {
     email: req.body.email,
     level: req.body.level ? req.body.level : 'user',
     name: req.body.name,
+    gender: req.body.gender,
     avatar: req.body.avatar ? req.body.avatar : 'avatar.png',
     password: req.body.password
   };
@@ -389,12 +422,13 @@ UserRoute.post('/api/users/removeNotedWord', express.json(), async (req, res, ne
           return
         }
         user.notedWords.splice(user.notedWords.map(e => e.word).indexOf(req.body.word), 1)
+        user.updated = Date.now();
         // Try Validate
         await UserModel.updateOne({ username: req.body.username }, { $set: user })
           .then(() =>
             res.json({
               statusCode: 200,
-              message: '刪除成功'
+              message: '刪除備註單字成功'
             }))
           .catch(err => {
             next(err)
@@ -448,7 +482,7 @@ UserRoute.post('/api/users/addKnowWord', express.json(), async (req, res, next) 
                   .then(() =>
                     res.json({
                       statusCode: 200,
-                      message: '新增成功'
+                      message: '新增為記熟單字'
                     }))
                   .catch(err => {
                     next(err)
@@ -476,7 +510,7 @@ UserRoute.post('/api/users/addKnowWord', express.json(), async (req, res, next) 
       return
     })
 });
-/* 刪除備註單字 */
+/* 刪除已知單字 */
 UserRoute.post('/api/users/removeKnowWord', express.json(), async (req, res, next) => {
   await UserModel.findOne({ username: req.body.username })
     .then(async user => {
@@ -497,12 +531,13 @@ UserRoute.post('/api/users/removeKnowWord', express.json(), async (req, res, nex
           return
         }
         user.knowWords.splice(user.knowWords.map(e => e.word).indexOf(req.body.word), 1)
+        user.updated = Date.now();
         // Try Validate
         await UserModel.updateOne({ username: req.body.username }, { $set: user })
           .then(() =>
             res.json({
               statusCode: 200,
-              message: '刪除成功'
+              message: '刪除記熟單字成功'
             }))
           .catch(err => {
             next(err)

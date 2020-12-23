@@ -34,6 +34,11 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: 'user',
     },
+    gender: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     avatar: {
       type: String,
       default: 'avatar.png',
@@ -47,6 +52,10 @@ const UserSchema = new mongoose.Schema(
       type: Array,
       trim: true,
       default: [],
+    },
+    loginDate: {
+      type: Date,
+      default: Date.now,
     },
     updated: {
       type: Date,
