@@ -298,11 +298,7 @@ UserRoute.post('/api/users', express.json(), async (req, res, next) => {
     statusCode: 400,
     message: '密碼長度不符合規定',
   };
-  if (!req.body.password) {
-    res.json(error)
-    return;
-  }
-  if (req.body.password.length < 6 || req.body.password.length > 16) {
+  if (!req.body.password || req.body.password.length < 6 || req.body.password.length > 16) {
     res.json(error2)
     return;
   }
