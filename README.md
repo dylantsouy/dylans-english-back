@@ -1,106 +1,84 @@
+<p align="center">
+  <a href="" rel="noopener">
+ <img width=400px height=200px src="https://i.imgur.com/epSsP5l.png" alt="Project logo"></a>
+</p>
+
+<h3 align="center">Dylan's-English</h3>
+<p align="center">https://dylanz-english-front.herokuapp.com/dashboard
+</p>
+
+
+---
+
+## 📝 Table of Contents
+
+- [About](#about)
+- [Getting Started](#getting_started)
+- [Deployment](#deployment)
+- [Usage](#usage)
+- [Built Using](#built_using)
+- [Authors](#authors)
+- [Acknowledgments](#acknowledgement)
+
+## 🧐 About <a name = "about"></a>
+
+ This is the web for English learning website, If you need more information, Please feel free to contact me at any time
+
+## 🏁 Getting Started <a name = "getting_started"></a>
+
+### Installing
+
+In the project directory, you can run:
+
+```
+npm i
+```
+
+Install the necessary package for project before start.
+
+```
+npm start
+```
+
+Runs the app in the development mode.
+
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+
+The page will reload if you make edits.
+You will also see any lint errors in the console.
+
+## 🔧 Running the tests <a name = "tests"></a>
+
+Tests for this system.
+
+
+```
+npm run test
+```
+
+## 🎈 Usage <a name="usage"></a>
+
+
+## 🚀 Deployment <a name = "deployment"></a>
+
+Deploy to Heroku
 https://dylanz-english-front.herokuapp.com/dashboard
 
-## Running Locally
+## ⛏️ Built Using <a name = "built_using"></a>
 
-Make sure you have [Node.js](http://nodejs.org/) and the [Heroku CLI](https://cli.heroku.com/) installed.
+- [Angular](https://angular.io/) - JavaScript Framework
+- [MUI](https://mui.com/) - UI Framework
+- [Typescript](https://www.typescriptlang.org/) - JavaScript with syntax for types
+- [NodeJs](https://nodejs.org/en/) - Server Environment
+- [Express](https://expressjs.com/) - Server Framework- 
+- [MongoDB](https://www.mongodb.com/) - Database
 
-```
-$ npm install
-$ npm start
-```
-(http://localhost:5000/)
+## ✍️ Authors <a name = "authors"></a>
 
-## Deploying new to Heroku
+- [@Dylan Tsou](https://github.com/dylantsouy) 
 
-```
-$ heroku create
-$ git push heroku main
-$ heroku open
-```
+## 🎉 Acknowledgements <a name = "acknowledgement"></a>
 
-## Deploying for update to Heroku
-
-```
-$ git add .
-$ git commit -m '內容'
-$ git push heroku main
-$ heroku open
-```
-
-## View Log
-
-$heroku logs --tail
-
-## Local
-
-$ heroku local  
-(http://localhost:5000/)
-
-## 縮放應用
-
-可以使用以下ps命令檢查正在運行的測功機  
-$ heroku ps  
-將網絡測功的數量縮放為零：  
-$ heroku ps:scale web=0  
-再次擴大規模：  
-$ heroku ps:scale web=1  
-
-## 啟動控制台
-
-$ heroku run bash  
-~ $ ls  
-~ $ exit  
-
-## remote專案
-
-$ heroku git:remote -a 專案名
-
-## Config Production環境變數
-
-$ heroku config:set key=value  
-.env是local的環境變數記得加入.gitignore
-
-## Types of MongoDB
-
-name:    String,  
-binary:  Buffer,  
-living:  Boolean,  
-updated: { type: Date, default: Date.now },  
-age:     { type: Number, min: 18, max: 65 },  
-mixed:   Schema.Types.Mixed,  
-_someId: Schema.Types.ObjectId,  
-decimal: Schema.Types.Decimal128,  
-array: [],  
-ofString: [String],  
-ofArrays: [[]],  
-ofArrayOfNumbers: [[Number]],  
-nested: {  
-  stuff: { type: String, lowercase: true, trim: true }  
-},  
-map: Map,  
-mapOfString: {  
-  type: Map,  
-  of: String  
-}  
-
-## KK
-
-元音                            輔音
-單元音           雙元音          清音             濁音  
-KK	 單字        KK   單字       KK   單字       KK	    單字  
-[æ]	 fat        [aɪ]	pie      [p]   pet       [b]	  book  
-[ɪ]	 sit        [aᴜ]	house    [t]   ten       [d]    desk  
-[e]	 pain       [ɔɪ]	coin     [k]	 key       [g]	  get  
-[ɛ]	 head                      [f]	 fat       [v]    vest  
-[i]	 seat                      [s]   sing      [z]    zoo  
-[ɑ]	 hot                       [θ]	 thank     [ð]    this  
-[o]	 nose                      [ʃ]	 short     [ʒ]    measure  
-[ɔ]	 four                      [tʃ]  chair     [dʒ]   john  
-[ɔ]	 dog                       [h]	 hat       [m]	  mom  
-[u]	 too                                       [n]    nose             
-[ᴜ]	 put                                       [ŋ]    sing  
-[ʌ]	 sun                                       [l]    long  
-[ə]	 again                                     [r]    red  
-[ɪr] rear                                      [j]	  yes  
-[ɚ]	 brother                                   [w]		we  
-[ɝ]	 bird  
+- Hat tip to anyone whose code was used
+- Inspiration
+- References
