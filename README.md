@@ -22,7 +22,7 @@
 
 ## 🧐 About <a name = "about"></a>
 
- This is the web for English learning website, If you need more information, Please feel free to contact me at any time
+ This is English learning website, If you need more information, Please feel free to contact me at any time
 
 ## 🏁 Getting Started <a name = "getting_started"></a>
 
@@ -57,7 +57,11 @@ npm run test
 ```
 
 ## 🎈 Usage <a name="usage"></a>
+You can register a new account or use test account
+account : test1234
+password : a123456
 
+Hope you can enjoy it!
 
 ## 🚀 Deployment <a name = "deployment"></a>
 
